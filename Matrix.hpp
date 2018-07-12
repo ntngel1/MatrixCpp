@@ -14,6 +14,7 @@
 	* Pow
 	* Determinator
 	* Good displaying
+	* Solve problem with operator's variable's types (type-casting float values)
 */
 
 template<class T>
@@ -47,12 +48,29 @@ public:
 
 	void transpose();
 	LUDecomposition<T> getLUDecomposition();
+
+	Matrix<T>& operator+=(const Matrix<T>& rhs);
+	Matrix<T>& operator-=(const Matrix<T>& rhs);
+	Matrix<T>& operator*=(const T& value); // operand's type??
+	Matrix<T>& operator/=(const T& value); // operand's type??
+
+	friend Matrix<T> operator+(Matrix<T> lhs, const Matrix<T>& rhs) {
+		return lhs += rhs;
+	}
+
+	friend Matrix<T> operator-(Matrix<T> lhs, const Matrix<T>& rhs) {
+		return lhs -= rhs;
+	}
+
+	friend Matrix<T> operator*(Matrix<T> lhs, const T& rhs) {
+		return lhs *= rhs;
+	}
+
+	friend Matrix<T> operator*(T lhs, Matrix<T>& rhs) {
+		return rhs *= lhs;
+	}
+
 	/*
-
-	friend Matrix<T> operator+(const Matrix<T>& lhs, const Matrix<T>& rhs);
-
-	friend Matrix<T> operator-(const Matrix<T>& lhs, const Matrix<T>& rhs);
-
 	friend Matrix<T> operator*(const Matrix<T>& lhs, T rhs);
 
 	friend Matrix<T>& operator*(T lhs, const Matrix<T>& rhs);
@@ -205,100 +223,73 @@ LUDecomposition<T> Matrix<T>::getLUDecomposition() {
 	return decomposition;
 }
 
+template<class T>
+Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& rhs) {
+	size_t rows = mRows, columns = mColumns;
+
+	if (rows != rhs.getRows()) {
+		return *this;
+	}
+	if (columns != rhs.getColumns()) {
+		return *this;
+	}
+
+	for (size_t row = 0; row < rows; ++row) {
+		for (size_t column = 0; column < columns; ++column) {
+			mRawMatrix[row][column] += rhs.get(row, column);
+		}
+	}
+
+	return *this;
+}
+
+template<class T>
+Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& rhs) {
+	size_t rows = mRows, columns = mColumns;
+
+	if (rows != rhs.getRows()) {
+		return *this;
+	}
+	if (columns != rhs.getColumns()) {
+		return *this;
+	}
+
+	for (size_t row = 0; row < rows; ++row) {
+		for (size_t column = 0; column < columns; ++column) {
+			mRawMatrix[row][column] -= rhs.get(row, column);
+		}
+	}
+
+	return *this;
+}
+
+template<class T>
+Matrix<T>& Matrix<T>::operator*=(const T& value) {
+	size_t rows = mRows, columns = mColumns;
+
+	for (auto & i : mRawMatrix) {
+		for (T & el : i) {
+			el *= value;
+		}
+	}
+
+	return *this;
+}
+
+template<class T>
+Matrix<T>& Matrix<T>::operator/=(const T& value) {
+	size_t rows = mRows, columns = mColumns;
+
+	for (auto & i : mRawMatrix) {
+		for (T & el : i) {
+			el /= value;
+		}
+	}
+	
+	return *this;
+}
+
 /*
-template<class T>
-LUDecomposition<T> Matrix<T>::getLUDecomposition() {
-
-	if (!isSquare())
-		return LUDecomposition<T>();
-
-	size_t n = getWidth();
-	T** lower = allocRawMatrix(n, n);
-	T** upper = allocRawMatrix(n, n);
-
-	for (size_t i = 0; i < n; ++i) {
-
-		// Upper Triangular
-		for (size_t k = i; k < n; ++k) {
-
-			// Summation of L(i, j) * U(j, k)
-			int sum = 0;
-			for (size_t j = 0; j < i; ++j)
-				sum += (lower[i][j] * upper[j][k]);
-
-			// Evaluating U(i, k)
-			upper[i][k] = get(i, k) - sum;
-		}
-
-		// Lower Triangular
-		for (size_t k = i; k < n; ++k) {
-			if (i == k)
-				lower[i][i] = 1; // Diagonal as 1
-			else {
-				// Summation of L(k, j) * U(j, i)
-				int sum = 0;
-				for (size_t j = 0; j < i; ++j)
-					sum += (lower[k][j] * upper[j][i]);
-
-				// Evaluating L(k, i)
-				lower[k][i] = (get(k, i) - sum) / upper[i][i];
-			}
-		}
-	}
-
-	LUDecomposition<T> decomposition(n);
-	decomposition.L = from(lower, n, n);
-	decomposition.U = from(upper, n, n);
-
-	return decomposition;
-}
-
-template<class T>
-Matrix<T> operator+(const Matrix<T>& lhs, const Matrix<T>& rhs) {
-	size_t width = lhs.getWidth(), height = lhs.getHeight();
-
-	Matrix<T> matrix = Matrix<T>(width, height);
-
-	if (width != rhs.getWidth()) {
-		return matrix;
-	}
-	if (height != rhs.getHeight()) {
-		return matrix;
-	}
-
-	for (size_t row = 0; row < height; ++row) {
-		for (size_t column = 0; column < width; ++column) {
-			T result = lhs.get(row, column) + rhs.get(row, column);
-			matrix.set(row, column, result);
-		}
-	}
-
-	return matrix;
-}
-
-template<class T>
-Matrix<T> operator-(const Matrix<T>& lhs, const Matrix<T>& rhs) {
-	size_t width = lhs.getWidth(), height = lhs.getHeight();
-
-	Matrix<T> matrix = Matrix<T>(width, height);
-
-	if (width != rhs.getWidth()) {
-		return matrix;
-	}
-	if (height != rhs.getHeight()) {
-		return matrix;
-	}
-
-	for (size_t row = 0; row < height; ++row) {
-		for (size_t column = 0; column < width; ++column) {
-			T result = lhs.get(row, column) - rhs.get(row, column);
-			matrix.set(row, column, result);
-		}
-	}
-
-	return matrix;
-}
-
 template<class T>
 Matrix<T> operator*(const Matrix<T>& lhs, T rhs) {
 	size_t width = lhs.getWidth(), height = lhs.getHeight();
