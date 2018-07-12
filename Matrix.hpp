@@ -40,8 +40,6 @@ public:
 	size_t getRows() const;
 	size_t getColumns() const;
 
-	
-
 	void set(size_t row, size_t column, T value);
 	   T get(size_t row, size_t column) const;
 	
@@ -63,6 +61,10 @@ public:
 
 	friend Matrix<T> operator-(Matrix<T> lhs, const Matrix<T>& rhs) {
 		return lhs -= rhs;
+	}
+
+	friend Matrix<T> operator*(Matrix<T> lhs, const Matrix<T>& rhs) {
+		return lhs *= rhs;
 	}
 
 	friend Matrix<T> operator*(Matrix<T> lhs, const T& rhs) {
@@ -267,19 +269,6 @@ Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& rhs) {
 }
 
 template<class T>
-Matrix<T>& Matrix<T>::operator*=(const T& value) {
-	size_t rows = mRows, columns = mColumns;
-
-	for (auto & i : mRawMatrix) {
-		for (T & el : i) {
-			el *= value;
-		}
-	}
-
-	return *this;
-}
-
-template<class T>
 Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& rhs) {
 	if (mColumns != rhs.getRows())
 		return *this;
@@ -297,6 +286,19 @@ Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& rhs) {
 	}
 
 	mRawMatrix = matrix;
+
+	return *this;
+}
+
+template<class T>
+Matrix<T>& Matrix<T>::operator*=(const T& value) {
+	size_t rows = mRows, columns = mColumns;
+
+	for (auto & i : mRawMatrix) {
+		for (T & el : i) {
+			el *= value;
+		}
+	}
 
 	return *this;
 }
