@@ -14,7 +14,9 @@
 	* Pow
 	* Determinator
 	* Good displaying
+	* isNull
 	* Solve problem with operator's variable's types (type-casting float values)
+	* allocRawMatrix really stupid!
 */
 
 template<class T>
@@ -51,6 +53,7 @@ public:
 
 	Matrix<T>& operator+=(const Matrix<T>& rhs);
 	Matrix<T>& operator-=(const Matrix<T>& rhs);
+	Matrix<T>& operator*=(const Matrix<T>& rhs);
 	Matrix<T>& operator*=(const T& value); // operand's type??
 	Matrix<T>& operator/=(const T& value); // operand's type??
 
@@ -277,6 +280,28 @@ Matrix<T>& Matrix<T>::operator*=(const T& value) {
 }
 
 template<class T>
+Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& rhs) {
+	if (mColumns != rhs.getRows())
+		return *this;
+
+	RawMatrix<T> matrix = allocRawMatrix(mRows, mColumns);
+
+	for (size_t row = 0; row < mRows; ++row) {
+		for (size_t column = 0; column < mColumns; ++column) {
+			double result = 0; // Maybe need to change type?
+			for (size_t r = 0; r < mColumns; ++r) {
+				result += get(row, r) * rhs.get(r, column);
+			}
+			matrix[row][column] = result;
+		}
+	}
+
+	mRawMatrix = matrix;
+
+	return *this;
+}
+
+template<class T>
 Matrix<T>& Matrix<T>::operator/=(const T& value) {
 	size_t rows = mRows, columns = mColumns;
 
@@ -375,6 +400,12 @@ RawMatrix<T> Matrix<T>::allocRawMatrix(size_t rows, size_t columns, T defaultVal
 	return rawMatrix;
 }
 
+
+/*
+	TODO:
+	* Is empty method
+	* Move it to another file
+*/
 template <class T>
 struct LUDecomposition {
 	Matrix<T> L;
