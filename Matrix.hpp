@@ -58,6 +58,9 @@ public:
 
 	Matrix<T>& Square();
 
+		  std::vector<T>& operator[](std::size_t row);
+	const std::vector<T>& operator[](std::size_t row) const;
+
 	Matrix<T>& operator+=(const Matrix<T>& rhs);
 	Matrix<T>& operator-=(const Matrix<T>& rhs);
 	Matrix<T>& operator*=(const Matrix<T>& rhs);
@@ -342,6 +345,16 @@ T Matrix<T>::getDeterminant() const {
 	}
 
 	return determinant;
+}
+
+template<class T>
+std::vector<T>& Matrix<T>::operator[](std::size_t row) {
+	return mRawMatrix[row];
+}
+
+template<class T>
+const std::vector<T>& Matrix<T>::operator[](std::size_t row) const {
+	return mRawMatrix[row];
 }
 
 template<class T>
