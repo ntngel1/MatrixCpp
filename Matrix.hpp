@@ -9,8 +9,8 @@
 	* Pow
 	* Good displaying
 	* Solve problem with operator's variable's types (type-casting float values)
-	* Constructor with initializer list
 	* Matrix trace
+	* Remove pointers everywhere 
 */
 
 template<class T>
@@ -55,6 +55,8 @@ public:
 
 	LUDecomposition<T>* getLUDecomposition() const;
 	T getDeterminant() const;
+
+	Matrix<T>& Square();
 
 	Matrix<T>& operator+=(const Matrix<T>& rhs);
 	Matrix<T>& operator-=(const Matrix<T>& rhs);
@@ -308,6 +310,15 @@ LUDecomposition<T>* Matrix<T>::getLUDecomposition() const {
 	decomposition->U = new Matrix<T>(upper);
 
 	return decomposition;
+}
+
+template<class T>
+Matrix<T>& Matrix<T>::Square() {
+	Matrix<T>* matrix = new Matrix<T>(*this);
+
+	*matrix *= *this;
+
+	return *matrix;
 }
 
 template<class T>
