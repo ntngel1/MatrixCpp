@@ -75,17 +75,8 @@ public:
 		return rhs *= lhs;
 	}
 
-	/*
-	friend Matrix<T> operator*(const Matrix<T>& lhs, T rhs);
+	Matrix<T> operator-();
 
-	friend Matrix<T>& operator*(T lhs, const Matrix<T>& rhs);
-
-	friend Matrix<T> operator/(const Matrix<T>& lhs, T rhs);
-
-	Matrix<T> operator-() const;
-
-	Matrix<T>& operator=(const Matrix<T>& matrix);
-	*/
 private:
 	size_t mRows;
 	size_t mColumns;
@@ -316,78 +307,20 @@ Matrix<T>& Matrix<T>::operator/=(const T& value) {
 	return *this;
 }
 
-/*
 template<class T>
-Matrix<T> operator*(const Matrix<T>& lhs, T rhs) {
-	size_t width = lhs.getWidth(), height = lhs.getHeight();
+Matrix<T> Matrix<T>::operator-() {
+	Matrix<T> matrix(*this);
 
-	Matrix<T> matrix = Matrix<T>(width, height);
-
-	for (size_t row = 0; row < height; ++row) {
-		for (size_t column = 0; column < width; ++column) {
-			T result = lhs.get(row, column) * rhs;
-			matrix.set(row, column, result);
+	for (size_t r = 0; r < mRows; ++r) {
+		for (size_t c = 0; c < mColumns; ++c) {
+			matrix.set(r, c, -get(r, c));
 		}
 	}
 
 	return matrix;
 }
 
-template<class T>
-Matrix<T>& operator*(T lhs, const Matrix<T>& rhs) {
-	return rhs->Matrix::operator*(rhs, lhs);
-}
 
-template<class T>
-Matrix<T> operator/(const Matrix<T>& lhs, T rhs) {
-	size_t width = lhs.getWidth(), height = lhs.getHeight();
-
-	Matrix<T> matrix = Matrix<T>(width, height);
-
-	for (size_t row = 0; row < height; ++row) {
-		for (size_t column = 0; column < width; ++column) {
-			T result = lhs.get(row, column) / rhs;
-			matrix.set(row, column, result);
-		}
-	}
-
-	return matrix;
-}
-
-template<class T>
-Matrix<T> Matrix<T>::operator-() const {
-	Matrix<T> matrix = this->copy();
-	size_t rows = matrix.getRows(), columns = matrix.getColumns();
-
-	for (size_t row = 0; row < rows; ++row) {
-		for (size_t column = 0; column < columns; ++column) {
-			matrix.set(row, column, -matrix.get(row, column));
-		}
-	}
-
-	return matrix;
-}
-
-template<class T>
-Matrix<T>& Matrix<T>::operator=(const Matrix<T>& matrix) {
-	if (this == &matrix)
-		return *this;
-
-	mColumns = matrix.getWidth();
-	mRows = matrix.getHeight();
-
-	freeContainer();
-	mRawMatrix = allocRawMatrix(mRows, mColumns);
-
-	for (size_t row = 0; row < mRawMatrix.size(); ++row) {
-		for (size_t column = 0; column < mRawMatrix.at(row).size(); ++column) {
-			mRawMatrix[row][column] = matrix.get(row, column);
-		}
-	}
-
-	return *this;
-}
-*/
 template<class T>
 RawMatrix<T> Matrix<T>::allocRawMatrix(size_t rows, size_t columns, T defaultValue) const {
 	RawMatrix<T> rawMatrix(rows);
