@@ -15,9 +15,6 @@
 	* Solve problem with operator's variable's types (type-casting float values)
 	* Constructor with initializer list
 	* Matrix trace
-
-	* Get row elements
-	* Get column elements
 */
 
 template<class T>
@@ -50,9 +47,14 @@ public:
 
 	void transpose();
 
+	/**
+	 * @brief Get the Diagonal Elements of Matrix
+	 * 
+	 * @return std::vector<T>* Elements
+	 */
 	std::vector<T>* getDiagonalElements() const;
 	std::vector<T>* getRowElements(size_t row) const;
-	std::vector<T>* getColumnElements(size_t row) const;
+	std::vector<T>* getColumnElements(size_t column) const;
 
 	LUDecomposition<T>* getLUDecomposition() const;
 	T getDeterminant() const;
@@ -86,7 +88,7 @@ public:
 	 * @param lhs Value
 	 * @param rhs Matrix
 	 * 
-	 * @return Multiplied matrix
+	 * @return Matrix<T> Multiplied matrix
 	 */
 	friend Matrix<T> operator*(T lhs, Matrix<T>& rhs) {
 		return rhs *= lhs;
@@ -95,7 +97,7 @@ public:
 	/**
 	 * @brief Multiplies matrix by -1
 	 * @details Multiplies each element of matrix by -1
-	 * @return Matrix with multiplied by -1 elements
+	 * @return Matrix<T> Matrix with multiplied by -1 elements
 	 */
 	Matrix<T> operator-();
 
@@ -225,12 +227,32 @@ std::vector<T>* Matrix<T>::getDiagonalElements() const {
 
 template<class T>
 std::vector<T>* Matrix<T>::getRowElements(size_t row) const {
+	if (row > mRows - 1)
+		return new std::vector<T>(0);
 
+	std::vector<T>* elements = new std::vector<T>();
+	elements->reserve(mColumns);
+
+	for (size_t column = 0; column < mColumns; ++column) {
+		elements->push_back(mRawMatrix[row][column]);
+	}
+
+	return elements;
 }
 
 template<class T>
-std::vector<T>* Matrix<T>::getColumnElements(size_t row) const {
+std::vector<T>* Matrix<T>::getColumnElements(size_t column) const {
+	if (column > mColumns - 1)
+		return new std::vector<T>();
 
+	std::vector<T>* elements = new std::vector<T>();
+	elements->reserve(mRows);
+
+	for (size_t row = 0; row < mRows; ++row) {
+		elements->push_back(mRawMatrix[row][column]);
+	}
+
+	return elements;
 }
 
 template<class T>
@@ -282,9 +304,25 @@ LUDecomposition<T>* Matrix<T>::getLUDecomposition() const {
 
 template<class T>
 T Matrix<T>::getDeterminant() const {
-	//LUDecomposition<T> decomposition = getLUDecomposition();
+	LUDecomposition<T>* decomposition = getLUDecomposition();
 
+	T determinant = 1;
+
+	if (decomposition->isEmpty)
+		return 0;
 	
+	std::vector<T>* LDiagonal = decomposition->L->getDiagonalElements();
+	std::vector<T>* UDiagonal = decomposition->U->getDiagonalElements();
+
+	for (auto & d : *LDiagonal) {
+		determinant *= d;
+	}
+
+	for (auto & d : *UDiagonal) {
+		determinant *= d;
+	}
+
+	return determinant;
 }
 
 template<class T>
