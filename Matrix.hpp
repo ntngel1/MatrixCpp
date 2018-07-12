@@ -14,6 +14,12 @@
 	* Good displaying
 	* Solve problem with operator's variable's types (type-casting float values)
 	* allocRawMatrix really stupid!
+	* Constructor with initializer list
+	* Matrix trace
+
+	* Get diagonal elements
+	* Get row elements
+	* Get column elements
 */
 
 template<class T>
@@ -45,7 +51,13 @@ public:
 	bool isNull() const;
 
 	void transpose();
-	LUDecomposition<T> getLUDecomposition();
+
+	std::vector<T> getDiagonalElements() const;
+	std::vector<T> getRowElements(size_t row) const;
+	std::vector<T> getColumnElements(size_t row) const;
+
+	LUDecomposition<T> getLUDecomposition() const;
+	T getDeterminant() const;
 
 	Matrix<T>& operator+=(const Matrix<T>& rhs);
 	Matrix<T>& operator-=(const Matrix<T>& rhs);
@@ -88,6 +100,8 @@ public:
 	 * @return Matrix with multiplied by -1 elements
 	 */
 	Matrix<T> operator-();
+
+
 
 private:
 	size_t mRows;
@@ -197,7 +211,32 @@ void Matrix<T>::transpose() {
 }
 
 template<class T>
-LUDecomposition<T> Matrix<T>::getLUDecomposition() {
+std::vector<T> Matrix<T>::getDiagonalElements() const {
+	if (!isSquare())
+		return std::vector<T>(0);
+	
+	size_t elements = getRows();
+	std::vector<T> diagonal;
+	diagonal.reserve(elements);
+
+	for (size_t i = 0; i < elements; ++i)
+		diagonal.push_back(mRawMatrix[i][i]);
+
+	return diagonal;
+}
+
+template<class T>
+std::vector<T> Matrix<T>::getRowElements(size_t row) const {
+
+}
+
+template<class T>
+std::vector<T> Matrix<T>::getColumnElements(size_t row) const {
+
+}
+
+template<class T>
+LUDecomposition<T> Matrix<T>::getLUDecomposition() const {
 
 	if (!isSquare())
 		return LUDecomposition<T>();
@@ -241,6 +280,13 @@ LUDecomposition<T> Matrix<T>::getLUDecomposition() {
 	decomposition.U = Matrix<T>(upper);
 
 	return decomposition;
+}
+
+template<class T>
+T Matrix<T>::getDeterminant() const {
+	//LUDecomposition<T> decomposition = getLUDecomposition();
+
+	
 }
 
 template<class T>
