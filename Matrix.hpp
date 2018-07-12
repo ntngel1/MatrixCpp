@@ -5,8 +5,6 @@
 
 /*
 	TODO: 
-	* MOVE TO VECTOR!!!!!!!!
-
 	* Overloading for operator[]
 	* Multiplying
 	* Dividing
@@ -14,7 +12,6 @@
 	* Pow
 	* Determinator
 	* Good displaying
-	* isNull
 	* Solve problem with operator's variable's types (type-casting float values)
 	* allocRawMatrix really stupid!
 */
@@ -45,6 +42,7 @@ public:
 	
 	bool isVector() const;
 	bool isSquare() const;
+	bool isNull() const;
 
 	void transpose();
 	LUDecomposition<T> getLUDecomposition();
@@ -71,10 +69,24 @@ public:
 		return lhs *= rhs;
 	}
 
+	/**
+	 * @brief Overloading for multiplying of matrix by some value
+	 * @details Multiplies a matrix by some number
+	 * 
+	 * @param lhs Value
+	 * @param rhs Matrix
+	 * 
+	 * @return Multiplied matrix
+	 */
 	friend Matrix<T> operator*(T lhs, Matrix<T>& rhs) {
 		return rhs *= lhs;
 	}
 
+	/**
+	 * @brief Multiplies matrix by -1
+	 * @details Multiplies each element of matrix by -1
+	 * @return Matrix with multiplied by -1 elements
+	 */
 	Matrix<T> operator-();
 
 private:
@@ -154,6 +166,18 @@ bool Matrix<T>::isSquare() const {
 		return true;
 	else
 		return false;
+}
+
+template<class T>
+bool Matrix<T>::isNull() const {
+	for (auto & r : mRawMatrix) {
+		for (auto & el : r) {
+			if (el != 0)
+				return false;
+		}
+	}
+
+	return true;
 }
 
 template<class T>
@@ -338,7 +362,6 @@ RawMatrix<T> Matrix<T>::allocRawMatrix(size_t rows, size_t columns, T defaultVal
 
 /*
 	TODO:
-	* Is empty method
 	* Move it to another file
 */
 template <class T>
@@ -346,12 +369,17 @@ struct LUDecomposition {
 	Matrix<T> L;
 	Matrix<T> U;
 	size_t size;
+	bool isEmpty;
 
 	LUDecomposition(size_t n) {
 		size = n;
+
+		if (size != 0)
+			isEmpty = false;
 	}
 
 	LUDecomposition() {
 		size = 0;
+		isEmpty = true;
 	}
 };
