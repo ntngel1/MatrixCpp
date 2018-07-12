@@ -13,7 +13,8 @@
 	* Determinator
 	* Good displaying
 	* Solve problem with operator's variable's types (type-casting float values)
-	* allocRawMatrix really stupid!
+	* Constructor with initializer list
+	* Matrix trace
 */
 
 template<class T>
@@ -45,7 +46,18 @@ public:
 	bool isNull() const;
 
 	void transpose();
-	LUDecomposition<T> getLUDecomposition();
+
+	/**
+	 * @brief Get the Diagonal Elements of Matrix
+	 * 
+	 * @return std::vector<T>* Elements
+	 */
+	std::vector<T>* getDiagonalElements() const;
+	std::vector<T>* getRowElements(size_t row) const;
+	std::vector<T>* getColumnElements(size_t column) const;
+
+	LUDecomposition<T>* getLUDecomposition() const;
+	T getDeterminant() const;
 
 	Matrix<T>& operator+=(const Matrix<T>& rhs);
 	Matrix<T>& operator-=(const Matrix<T>& rhs);
@@ -76,7 +88,7 @@ public:
 	 * @param lhs Value
 	 * @param rhs Matrix
 	 * 
-	 * @return Multiplied matrix
+	 * @return Matrix<T> Multiplied matrix
 	 */
 	friend Matrix<T> operator*(T lhs, Matrix<T>& rhs) {
 		return rhs *= lhs;
@@ -85,9 +97,11 @@ public:
 	/**
 	 * @brief Multiplies matrix by -1
 	 * @details Multiplies each element of matrix by -1
-	 * @return Matrix with multiplied by -1 elements
+	 * @return Matrix<T> Matrix with multiplied by -1 elements
 	 */
 	Matrix<T> operator-();
+
+
 
 private:
 	size_t mRows;
@@ -95,7 +109,7 @@ private:
 	RawMatrix<T> mRawMatrix;
 
 private:
-	RawMatrix<T> allocRawMatrix(size_t width, size_t height, T defaultValue = T()) const;
+	RawMatrix<T>* allocRawMatrix(size_t width, size_t height, T defaultValue = T()) const;
 };
 
 template<class T>
@@ -103,7 +117,7 @@ Matrix<T>::Matrix(size_t rows, size_t columns, T defaultValue) {
 	this->mColumns = columns;
 	this->mRows = rows;
 
-	this->mRawMatrix = allocRawMatrix(rows, columns, defaultValue);
+	this->mRawMatrix = *allocRawMatrix(rows, columns, defaultValue);
 }
 
 template<class T>
@@ -111,7 +125,7 @@ Matrix<T>::Matrix(const RawMatrix<T>& rawMatrix) {
 	mRows = rawMatrix.size();
 	mColumns = rawMatrix[0].size();
 	
-	mRawMatrix = allocRawMatrix(mRows, mColumns);
+	mRawMatrix = *allocRawMatrix(mRows, mColumns);
 	std::copy(rawMatrix.begin(), rawMatrix.end(), mRawMatrix.begin());
 }
 
@@ -183,7 +197,7 @@ bool Matrix<T>::isNull() const {
 template<class T>
 void Matrix<T>::transpose() {
 	size_t rows = getColumns(), columns = getRows();
-	RawMatrix<T> transposed = allocRawMatrix(rows, columns);
+	RawMatrix<T> transposed = *allocRawMatrix(rows, columns);
 
 	for (size_t row = 0; row < rows; ++row) {
 		for (size_t column = 0; column < columns; ++column) {
@@ -197,14 +211,59 @@ void Matrix<T>::transpose() {
 }
 
 template<class T>
-LUDecomposition<T> Matrix<T>::getLUDecomposition() {
+std::vector<T>* Matrix<T>::getDiagonalElements() const {
+	if (!isSquare())
+		return new std::vector<T>(0);
+	
+	size_t elements = getRows();
+	std::vector<T>* diagonal = new std::vector<T>();
+	diagonal->reserve(elements);
+
+	for (size_t i = 0; i < elements; ++i)
+		diagonal->push_back(mRawMatrix[i][i]);
+
+	return diagonal;
+}
+
+template<class T>
+std::vector<T>* Matrix<T>::getRowElements(size_t row) const {
+	if (row > mRows - 1)
+		return new std::vector<T>(0);
+
+	std::vector<T>* elements = new std::vector<T>();
+	elements->reserve(mColumns);
+
+	for (size_t column = 0; column < mColumns; ++column) {
+		elements->push_back(mRawMatrix[row][column]);
+	}
+
+	return elements;
+}
+
+template<class T>
+std::vector<T>* Matrix<T>::getColumnElements(size_t column) const {
+	if (column > mColumns - 1)
+		return new std::vector<T>();
+
+	std::vector<T>* elements = new std::vector<T>();
+	elements->reserve(mRows);
+
+	for (size_t row = 0; row < mRows; ++row) {
+		elements->push_back(mRawMatrix[row][column]);
+	}
+
+	return elements;
+}
+
+template<class T>
+LUDecomposition<T>* Matrix<T>::getLUDecomposition() const {
 
 	if (!isSquare())
-		return LUDecomposition<T>();
+		return new LUDecomposition<T>();
 
 	size_t n = mRows;
-	RawMatrix<T> lower = allocRawMatrix(n, n);
-	RawMatrix<T> upper = allocRawMatrix(n, n);
+	RawMatrix<T> lower = *allocRawMatrix(n, n);
+	RawMatrix<T> upper = *allocRawMatrix(n, n);
 
 	for (size_t i = 0; i < n; ++i) {
 
@@ -236,11 +295,34 @@ LUDecomposition<T> Matrix<T>::getLUDecomposition() {
 		}
 	}
 
-	LUDecomposition<T> decomposition(n);
-	decomposition.L = Matrix<T>(lower);
-	decomposition.U = Matrix<T>(upper);
+	LUDecomposition<T>* decomposition = new LUDecomposition<T>(n);
+	decomposition->L = new Matrix<T>(lower);
+	decomposition->U = new Matrix<T>(upper);
 
 	return decomposition;
+}
+
+template<class T>
+T Matrix<T>::getDeterminant() const {
+	LUDecomposition<T>* decomposition = getLUDecomposition();
+
+	T determinant = 1;
+
+	if (decomposition->isEmpty)
+		return 0;
+	
+	std::vector<T>* LDiagonal = decomposition->L->getDiagonalElements();
+	std::vector<T>* UDiagonal = decomposition->U->getDiagonalElements();
+
+	for (auto & d : *LDiagonal) {
+		determinant *= d;
+	}
+
+	for (auto & d : *UDiagonal) {
+		determinant *= d;
+	}
+
+	return determinant;
 }
 
 template<class T>
@@ -288,7 +370,7 @@ Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& rhs) {
 	if (mColumns != rhs.getRows())
 		return *this;
 
-	RawMatrix<T> matrix = allocRawMatrix(mRows, mColumns);
+	RawMatrix<T> matrix = *allocRawMatrix(mRows, mColumns);
 
 	for (size_t row = 0; row < mRows; ++row) {
 		for (size_t column = 0; column < mColumns; ++column) {
@@ -346,10 +428,10 @@ Matrix<T> Matrix<T>::operator-() {
 
 
 template<class T>
-RawMatrix<T> Matrix<T>::allocRawMatrix(size_t rows, size_t columns, T defaultValue) const {
-	RawMatrix<T> rawMatrix(rows);
+RawMatrix<T>* Matrix<T>::allocRawMatrix(size_t rows, size_t columns, T defaultValue) const {
+	RawMatrix<T>* rawMatrix = new RawMatrix<T>(rows);
 
-	for (auto & r : rawMatrix) {
+	for (auto & r : *rawMatrix) {
 		r = std::vector<T>(columns);
 		for (auto & el : r) {
 			el = defaultValue;
@@ -366,8 +448,8 @@ RawMatrix<T> Matrix<T>::allocRawMatrix(size_t rows, size_t columns, T defaultVal
 */
 template <class T>
 struct LUDecomposition {
-	Matrix<T> L;
-	Matrix<T> U;
+	Matrix<T>* L;
+	Matrix<T>* U;
 	size_t size;
 	bool isEmpty;
 
