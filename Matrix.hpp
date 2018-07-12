@@ -6,11 +6,7 @@
 /*
 	TODO: 
 	* Overloading for operator[]
-	* Multiplying
-	* Dividing
-	* Substracting
 	* Pow
-	* Determinator
 	* Good displaying
 	* Solve problem with operator's variable's types (type-casting float values)
 	* Constructor with initializer list
@@ -29,6 +25,7 @@ class Matrix
 public:
 	Matrix(size_t rows = 0, size_t columns = 0, T defaultValue = T());
 	Matrix(const RawMatrix<T>& rawMatrix);
+	Matrix(const std::initializer_list<std::initializer_list<T>>& rawMatrixList);
 	Matrix(const Matrix<T>& matrix);
 
 	~Matrix();
@@ -118,6 +115,18 @@ Matrix<T>::Matrix(size_t rows, size_t columns, T defaultValue) {
 	this->mRows = rows;
 
 	this->mRawMatrix = *allocRawMatrix(rows, columns, defaultValue);
+}
+
+template<class T>
+Matrix<T>::Matrix(const std::initializer_list<std::initializer_list<T>>& rawMatrixList)
+		  :Matrix(rawMatrixList.size(), rawMatrixList.begin()->size())
+{
+	size_t rows = rawMatrixList.size(), columns = rawMatrixList.begin()->size();
+	for (size_t r = 0; r < rows; ++r) {
+		for (size_t c = 0; c < columns; ++c) {
+			mRawMatrix[r][c] = *((rawMatrixList.begin() + r)->begin() + c);
+		}
+	}
 }
 
 template<class T>
@@ -257,7 +266,6 @@ std::vector<T>* Matrix<T>::getColumnElements(size_t column) const {
 
 template<class T>
 LUDecomposition<T>* Matrix<T>::getLUDecomposition() const {
-
 	if (!isSquare())
 		return new LUDecomposition<T>();
 
