@@ -19,8 +19,7 @@ template<class T>
 using RawMatrix = std::vector<std::vector<T>>;
 
 template <class T>
-class Matrix
-{
+class Matrix {
 public:
 	Matrix(std::size_t rows = 0, std::size_t columns = 0, T defaultValue = T());
 	Matrix(const RawMatrix<T>& rawMatrix);
@@ -29,21 +28,10 @@ public:
 
 	~Matrix();
 	
-	static RawMatrix<T>& allocateRawMatrix(std::size_t rows, std::size_t columns);
-
 	const RawMatrix<T>& getRawMatrix() const;
 	
 	std::size_t getRows() const;
 	std::size_t getColumns() const;
-
-	void set(std::size_t row, std::size_t column, T value);
-	   T get(std::size_t row, std::size_t column) const;
-	
-	bool isVector() const;
-	bool isSquare() const;
-	bool isNull() const;
-
-	void transpose();
 
 	/**
 	 * @brief Get the Diagonal Elements of Matrix
@@ -53,6 +41,15 @@ public:
 	std::vector<T>* getDiagonalElements() const;
 	std::vector<T>* getRowElements(std::size_t row) const;
 	std::vector<T>* getColumnElements(std::size_t column) const;
+
+	void set(std::size_t row, std::size_t column, T value);
+	   T get(std::size_t row, std::size_t column) const;
+	
+	bool isVector() const;
+	bool isSquare() const;
+	bool isNull() const;
+
+	void transpose();
 
 	//T getDeterminant() const;
 
@@ -104,6 +101,7 @@ public:
 	Matrix<T> operator-();
 
 
+	static RawMatrix<T>& allocateRawMatrix(std::size_t rows, std::size_t columns);
 
 private:
 	std::size_t mRows;
@@ -423,7 +421,6 @@ Matrix<T> Matrix<T>::operator-() {
 
 	return matrix;
 }
-
 
 template<class T>
 RawMatrix<T>* Matrix<T>::allocRawMatrix(std::size_t rows, std::size_t columns, T defaultValue) const {
