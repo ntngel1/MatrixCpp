@@ -1,17 +1,15 @@
+/**
+ * @brief Main header of matrix
+ * 
+ * @file Matrix.hpp
+ * @author Kirill Shepelev
+ * @date 2018-07-13
+ */
+
 #include <cstdlib>
 #include <string>
 #include <iostream>
 #include <vector>
-
-/*
-	TODO: 
-	* Overloading for operator[]
-	* Pow
-	* Good displaying
-	* Solve problem with operator's variable's types (type-casting float values)
-	* Matrix trace
-	* Remove pointers everywhere 
-*/
 
 template<class T>
 struct LUDecomposition;
