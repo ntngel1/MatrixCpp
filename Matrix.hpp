@@ -22,7 +22,7 @@ template <class T>
 class Matrix
 {
 public:
-	Matrix(size_t rows = 0, size_t columns = 0, T defaultValue = T());
+	Matrix(std::size_t rows = 0, std::size_t columns = 0, T defaultValue = T());
 	Matrix(const RawMatrix<T>& rawMatrix);
 	Matrix(const std::initializer_list<std::initializer_list<T>>& rawMatrixList);
 	Matrix(const Matrix<T>& matrix);
@@ -33,11 +33,11 @@ public:
 
 	const RawMatrix<T>& getRawMatrix() const;
 	
-	size_t getRows() const;
-	size_t getColumns() const;
+	std::size_t getRows() const;
+	std::size_t getColumns() const;
 
-	void set(size_t row, size_t column, T value);
-	   T get(size_t row, size_t column) const;
+	void set(std::size_t row, std::size_t column, T value);
+	   T get(std::size_t row, std::size_t column) const;
 	
 	bool isVector() const;
 	bool isSquare() const;
@@ -51,8 +51,8 @@ public:
 	 * @return std::vector<T>* Elements
 	 */
 	std::vector<T>* getDiagonalElements() const;
-	std::vector<T>* getRowElements(size_t row) const;
-	std::vector<T>* getColumnElements(size_t column) const;
+	std::vector<T>* getRowElements(std::size_t row) const;
+	std::vector<T>* getColumnElements(std::size_t column) const;
 
 	//T getDeterminant() const;
 
@@ -106,16 +106,16 @@ public:
 
 
 private:
-	size_t mRows;
-	size_t mColumns;
+	std::size_t mRows;
+	std::size_t mColumns;
 	RawMatrix<T> mRawMatrix;
 
 private:
-	RawMatrix<T>* allocRawMatrix(size_t width, size_t height, T defaultValue = T()) const;
+	RawMatrix<T>* allocRawMatrix(std::size_t width, std::size_t height, T defaultValue = T()) const;
 };
 
 template<class T>
-Matrix<T>::Matrix(size_t rows, size_t columns, T defaultValue) {
+Matrix<T>::Matrix(std::size_t rows, std::size_t columns, T defaultValue) {
 	this->mColumns = columns;
 	this->mRows = rows;
 
@@ -126,9 +126,9 @@ template<class T>
 Matrix<T>::Matrix(const std::initializer_list<std::initializer_list<T>>& rawMatrixList)
 		  :Matrix(rawMatrixList.size(), rawMatrixList.begin()->size())
 {
-	size_t rows = rawMatrixList.size(), columns = rawMatrixList.begin()->size();
-	for (size_t r = 0; r < rows; ++r) {
-		for (size_t c = 0; c < columns; ++c) {
+	std::size_t rows = rawMatrixList.size(), columns = rawMatrixList.begin()->size();
+	for (std::size_t r = 0; r < rows; ++r) {
+		for (std::size_t c = 0; c < columns; ++c) {
 			mRawMatrix[r][c] = *((rawMatrixList.begin() + r)->begin() + c);
 		}
 	}
@@ -171,22 +171,22 @@ const RawMatrix<T>& Matrix<T>::getRawMatrix() const {
 }
 
 template<class T>
-size_t Matrix<T>::getRows() const {
+std::size_t Matrix<T>::getRows() const {
 	return mRows;
 }
 
 template<class T>
-size_t Matrix<T>::getColumns() const {
+std::size_t Matrix<T>::getColumns() const {
 	return mColumns;
 }
 
 template<class T>
-void Matrix<T>::set(size_t row, size_t column, T value) {
+void Matrix<T>::set(std::size_t row, std::size_t column, T value) {
 	mRawMatrix[row][column] = value;
 }
 
 template<class T>
-T Matrix<T>::get(size_t row, size_t column) const {
+T Matrix<T>::get(std::size_t row, std::size_t column) const {
 	return mRawMatrix[row][column];
 }
 
@@ -222,11 +222,11 @@ bool Matrix<T>::isNull() const {
 
 template<class T>
 void Matrix<T>::transpose() {
-	size_t rows = getColumns(), columns = getRows();
+	std::size_t rows = getColumns(), columns = getRows();
 	RawMatrix<T> transposed = *allocRawMatrix(rows, columns);
 
-	for (size_t row = 0; row < rows; ++row) {
-		for (size_t column = 0; column < columns; ++column) {
+	for (std::size_t row = 0; row < rows; ++row) {
+		for (std::size_t column = 0; column < columns; ++column) {
 			transposed[row][column] = mRawMatrix[column][row];
 		}
 	}
@@ -241,25 +241,25 @@ std::vector<T>* Matrix<T>::getDiagonalElements() const {
 	if (!isSquare())
 		return new std::vector<T>(0);
 	
-	size_t elements = getRows();
+	std::size_t elements = getRows();
 	std::vector<T>* diagonal = new std::vector<T>();
 	diagonal->reserve(elements);
 
-	for (size_t i = 0; i < elements; ++i)
+	for (std::size_t i = 0; i < elements; ++i)
 		diagonal->push_back(mRawMatrix[i][i]);
 
 	return diagonal;
 }
 
 template<class T>
-std::vector<T>* Matrix<T>::getRowElements(size_t row) const {
+std::vector<T>* Matrix<T>::getRowElements(std::size_t row) const {
 	if (row > mRows - 1)
 		return new std::vector<T>(0);
 
 	std::vector<T>* elements = new std::vector<T>();
 	elements->reserve(mColumns);
 
-	for (size_t column = 0; column < mColumns; ++column) {
+	for (std::size_t column = 0; column < mColumns; ++column) {
 		elements->push_back(mRawMatrix[row][column]);
 	}
 
@@ -267,14 +267,14 @@ std::vector<T>* Matrix<T>::getRowElements(size_t row) const {
 }
 
 template<class T>
-std::vector<T>* Matrix<T>::getColumnElements(size_t column) const {
+std::vector<T>* Matrix<T>::getColumnElements(std::size_t column) const {
 	if (column > mColumns - 1)
 		return new std::vector<T>();
 
 	std::vector<T>* elements = new std::vector<T>();
 	elements->reserve(mRows);
 
-	for (size_t row = 0; row < mRows; ++row) {
+	for (std::size_t row = 0; row < mRows; ++row) {
 		elements->push_back(mRawMatrix[row][column]);
 	}
 
@@ -325,7 +325,7 @@ const std::vector<T>& Matrix<T>::operator[](std::size_t row) const {
 
 template<class T>
 Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& rhs) {
-	size_t rows = mRows, columns = mColumns;
+	std::size_t rows = mRows, columns = mColumns;
 
 	if (rows != rhs.getRows()) {
 		return *this;
@@ -334,8 +334,8 @@ Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& rhs) {
 		return *this;
 	}
 
-	for (size_t row = 0; row < rows; ++row) {
-		for (size_t column = 0; column < columns; ++column) {
+	for (std::size_t row = 0; row < rows; ++row) {
+		for (std::size_t column = 0; column < columns; ++column) {
 			mRawMatrix[row][column] += rhs.get(row, column);
 		}
 	}
@@ -345,7 +345,7 @@ Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& rhs) {
 
 template<class T>
 Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& rhs) {
-	size_t rows = mRows, columns = mColumns;
+	std::size_t rows = mRows, columns = mColumns;
 
 	if (rows != rhs.getRows()) {
 		return *this;
@@ -354,8 +354,8 @@ Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& rhs) {
 		return *this;
 	}
 
-	for (size_t row = 0; row < rows; ++row) {
-		for (size_t column = 0; column < columns; ++column) {
+	for (std::size_t row = 0; row < rows; ++row) {
+		for (std::size_t column = 0; column < columns; ++column) {
 			mRawMatrix[row][column] -= rhs.get(row, column);
 		}
 	}
@@ -370,10 +370,10 @@ Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& rhs) {
 
 	RawMatrix<T> matrix = *allocRawMatrix(mRows, mColumns);
 
-	for (size_t row = 0; row < mRows; ++row) {
-		for (size_t column = 0; column < mColumns; ++column) {
+	for (std::size_t row = 0; row < mRows; ++row) {
+		for (std::size_t column = 0; column < mColumns; ++column) {
 			double result = 0; // Maybe need to change type?
-			for (size_t r = 0; r < mColumns; ++r) {
+			for (std::size_t r = 0; r < mColumns; ++r) {
 				result += get(row, r) * rhs.get(r, column);
 			}
 			matrix[row][column] = result;
@@ -387,7 +387,7 @@ Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& rhs) {
 
 template<class T>
 Matrix<T>& Matrix<T>::operator*=(const T& value) {
-	size_t rows = mRows, columns = mColumns;
+	std::size_t rows = mRows, columns = mColumns;
 
 	for (auto & i : mRawMatrix) {
 		for (T & el : i) {
@@ -400,7 +400,7 @@ Matrix<T>& Matrix<T>::operator*=(const T& value) {
 
 template<class T>
 Matrix<T>& Matrix<T>::operator/=(const T& value) {
-	size_t rows = mRows, columns = mColumns;
+	std::size_t rows = mRows, columns = mColumns;
 
 	for (auto & i : mRawMatrix) {
 		for (T & el : i) {
@@ -415,8 +415,8 @@ template<class T>
 Matrix<T> Matrix<T>::operator-() {
 	Matrix<T> matrix(*this);
 
-	for (size_t r = 0; r < mRows; ++r) {
-		for (size_t c = 0; c < mColumns; ++c) {
+	for (std::size_t r = 0; r < mRows; ++r) {
+		for (std::size_t c = 0; c < mColumns; ++c) {
 			matrix.set(r, c, -get(r, c));
 		}
 	}
@@ -426,7 +426,7 @@ Matrix<T> Matrix<T>::operator-() {
 
 
 template<class T>
-RawMatrix<T>* Matrix<T>::allocRawMatrix(size_t rows, size_t columns, T defaultValue) const {
+RawMatrix<T>* Matrix<T>::allocRawMatrix(std::size_t rows, std::size_t columns, T defaultValue) const {
 	RawMatrix<T>* rawMatrix = new RawMatrix<T>(rows);
 
 	for (auto & r : *rawMatrix) {
