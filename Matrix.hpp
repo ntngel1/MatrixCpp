@@ -6,13 +6,14 @@
  * @date 2018-07-13
  */
 
+#pragma once
+
 #include <cstdlib>
 #include <string>
 #include <iostream>
 #include <vector>
 
-template<class T>
-struct LUDecomposition;
+namespace MatrixCpp {
 
 template<class T>
 using RawMatrix = std::vector<std::vector<T>>;
@@ -28,6 +29,8 @@ public:
 
 	~Matrix();
 	
+	static RawMatrix<T>& allocateRawMatrix(std::size_t rows, std::size_t columns);
+
 	const RawMatrix<T>& getRawMatrix() const;
 	
 	size_t getRows() const;
@@ -51,8 +54,7 @@ public:
 	std::vector<T>* getRowElements(size_t row) const;
 	std::vector<T>* getColumnElements(size_t column) const;
 
-	LUDecomposition<T>* getLUDecomposition() const;
-	T getDeterminant() const;
+	//T getDeterminant() const;
 
 	Matrix<T>& Square();
 
@@ -150,6 +152,18 @@ Matrix<T>::Matrix(const Matrix<T>& matrix) : Matrix(matrix.getRawMatrix())
 template<class T>
 Matrix<T>::~Matrix() 
 {}
+
+template<class T>
+RawMatrix<T>& Matrix<T>::allocateRawMatrix(std::size_t rows, std::size_t columns) {
+	RawMatrix<T>* matrix = new RawMatrix<T>();
+	matrix->resize(rows);
+	
+	for (auto & row : *matrix) {
+		row.resize(columns);
+	}
+
+	return *matrix;
+}
 
 template<class T>
 const RawMatrix<T>& Matrix<T>::getRawMatrix() const {
@@ -268,52 +282,6 @@ std::vector<T>* Matrix<T>::getColumnElements(size_t column) const {
 }
 
 template<class T>
-LUDecomposition<T>* Matrix<T>::getLUDecomposition() const {
-	if (!isSquare())
-		return new LUDecomposition<T>();
-
-	size_t n = mRows;
-	RawMatrix<T> lower = *allocRawMatrix(n, n);
-	RawMatrix<T> upper = *allocRawMatrix(n, n);
-
-	for (size_t i = 0; i < n; ++i) {
-
-		// Upper Triangular
-		for (size_t k = i; k < n; ++k) {
-
-			// Summation of L(i, j) * U(j, k)
-			int sum = 0;
-			for (size_t j = 0; j < i; ++j)
-				sum += (lower[i][j] * upper[j][k]);
-
-			// Evaluating U(i, k)
-			upper[i][k] = get(i, k) - sum;
-		}
-
-		// Lower Triangular
-		for (size_t k = i; k < n; ++k) {
-			if (i == k)
-				lower[i][i] = 1; // Diagonal as 1
-			else {
-				// Summation of L(k, j) * U(j, i)
-				int sum = 0;
-				for (size_t j = 0; j < i; ++j)
-					sum += (lower[k][j] * upper[j][i]);
-
-				// Evaluating L(k, i)
-				lower[k][i] = (get(k, i) - sum) / upper[i][i];
-			}
-		}
-	}
-
-	LUDecomposition<T>* decomposition = new LUDecomposition<T>(n);
-	decomposition->L = new Matrix<T>(lower);
-	decomposition->U = new Matrix<T>(upper);
-
-	return decomposition;
-}
-
-template<class T>
 Matrix<T>& Matrix<T>::Square() {
 	Matrix<T>* matrix = new Matrix<T>(*this);
 
@@ -321,7 +289,7 @@ Matrix<T>& Matrix<T>::Square() {
 
 	return *matrix;
 }
-
+/*
 template<class T>
 T Matrix<T>::getDeterminant() const {
 	LUDecomposition<T>* decomposition = getLUDecomposition();
@@ -344,7 +312,7 @@ T Matrix<T>::getDeterminant() const {
 
 	return determinant;
 }
-
+*/
 template<class T>
 std::vector<T>& Matrix<T>::operator[](std::size_t row) {
 	return mRawMatrix[row];
@@ -471,27 +439,4 @@ RawMatrix<T>* Matrix<T>::allocRawMatrix(size_t rows, size_t columns, T defaultVa
 	return rawMatrix;
 }
 
-
-/*
-	TODO:
-	* Move it to another file
-*/
-template <class T>
-struct LUDecomposition {
-	Matrix<T>* L;
-	Matrix<T>* U;
-	size_t size;
-	bool isEmpty;
-
-	LUDecomposition(size_t n) {
-		size = n;
-
-		if (size != 0)
-			isEmpty = false;
-	}
-
-	LUDecomposition() {
-		size = 0;
-		isEmpty = true;
-	}
-};
+}
