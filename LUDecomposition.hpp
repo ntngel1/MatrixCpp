@@ -17,7 +17,7 @@ namespace MatrixCpp {
  * 
  * @tparam Type of square matrice's elements
  */
-template<class T>
+template<typename T>
 class LUDecomposition {
 public:
     /**
@@ -103,23 +103,23 @@ private:
 	bool empty;
 };
 
-template<class T>
+template<typename T>
 LUDecomposition<T>::LUDecomposition() {
     empty = true;
     size = 0;
 }
 
-template<class T>
+template<typename T>
 LUDecomposition<T>::LUDecomposition(const Matrix<T>& matrix) {
     decompose(matrix);
 }
 
-template<class T>
+template<typename T>
 LUDecomposition<T>::~LUDecomposition() {
 
 }
 
-template<class T>
+template<typename T>
 bool LUDecomposition<T>::decompose(const Matrix<T>& matrix) {
     if (!matrix.isSquare()) {
         size = 0;
@@ -169,22 +169,22 @@ bool LUDecomposition<T>::decompose(const Matrix<T>& matrix) {
     return !empty;
 }
 
-template<class T>
+template<typename T>
 std::shared_ptr<Matrix<T>> LUDecomposition<T>::getL() const {
     return L;
 }
 
-template<class T>
+template<typename T>
 std::shared_ptr<Matrix<T>> LUDecomposition<T>::getU() const {
     return U;
 }
 
-template<class T>
+template<typename T>
 std::size_t LUDecomposition<T>::getSize() const {
     return size;
 }
 
-template<class T>
+template<typename T>
 bool LUDecomposition<T>::isEmpty() const {
     return empty;
 }

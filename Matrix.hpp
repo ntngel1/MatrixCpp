@@ -15,10 +15,10 @@
 
 namespace MatrixCpp {
 
-template<class T>
+template<typename T>
 using RawMatrix = std::vector<std::vector<T>>;
 
-template <class T>
+template <typename T>
 class Matrix {
 public:
 	Matrix(std::size_t rows = 0, std::size_t columns = 0, T defaultValue = T());
@@ -112,7 +112,7 @@ private:
 	RawMatrix<T>* allocRawMatrix(std::size_t width, std::size_t height, T defaultValue = T()) const;
 };
 
-template<class T>
+template<typename T>
 Matrix<T>::Matrix(std::size_t rows, std::size_t columns, T defaultValue) {
 	this->mColumns = columns;
 	this->mRows = rows;
@@ -120,7 +120,7 @@ Matrix<T>::Matrix(std::size_t rows, std::size_t columns, T defaultValue) {
 	this->mRawMatrix = *allocRawMatrix(rows, columns, defaultValue);
 }
 
-template<class T>
+template<typename T>
 Matrix<T>::Matrix(const std::initializer_list<std::initializer_list<T>>& rawMatrixList)
 		  :Matrix(rawMatrixList.size(), rawMatrixList.begin()->size())
 {
@@ -132,7 +132,7 @@ Matrix<T>::Matrix(const std::initializer_list<std::initializer_list<T>>& rawMatr
 	}
 }
 
-template<class T>
+template<typename T>
 Matrix<T>::Matrix(const RawMatrix<T>& rawMatrix) {
 	mRows = rawMatrix.size();
 	mColumns = rawMatrix[0].size();
@@ -141,17 +141,17 @@ Matrix<T>::Matrix(const RawMatrix<T>& rawMatrix) {
 	std::copy(rawMatrix.begin(), rawMatrix.end(), mRawMatrix.begin());
 }
 
-template<class T>
+template<typename T>
 Matrix<T>::Matrix(const Matrix<T>& matrix) : Matrix(matrix.getRawMatrix()) 
 {
 	std::cout << "Copying constructor called" << std::endl;
 }
 
-template<class T>
+template<typename T>
 Matrix<T>::~Matrix() 
 {}
 
-template<class T>
+template<typename T>
 RawMatrix<T>& Matrix<T>::allocateRawMatrix(std::size_t rows, std::size_t columns) {
 	RawMatrix<T>* matrix = new RawMatrix<T>();
 	matrix->resize(rows);
@@ -163,32 +163,32 @@ RawMatrix<T>& Matrix<T>::allocateRawMatrix(std::size_t rows, std::size_t columns
 	return *matrix;
 }
 
-template<class T>
+template<typename T>
 const RawMatrix<T>& Matrix<T>::getRawMatrix() const {
 	return mRawMatrix;
 }
 
-template<class T>
+template<typename T>
 std::size_t Matrix<T>::getRows() const {
 	return mRows;
 }
 
-template<class T>
+template<typename T>
 std::size_t Matrix<T>::getColumns() const {
 	return mColumns;
 }
 
-template<class T>
+template<typename T>
 void Matrix<T>::set(std::size_t row, std::size_t column, T value) {
 	mRawMatrix[row][column] = value;
 }
 
-template<class T>
+template<typename T>
 T Matrix<T>::get(std::size_t row, std::size_t column) const {
 	return mRawMatrix[row][column];
 }
 
-template<class T>
+template<typename T>
 bool Matrix<T>::isVector() const {
 	if (mColumns == 1 && mRows > 1)
 		return true;
@@ -198,7 +198,7 @@ bool Matrix<T>::isVector() const {
 		return false;
 }
 
-template<class T>
+template<typename T>
 bool Matrix<T>::isSquare() const {
 	if (mColumns == mRows)
 		return true;
@@ -206,7 +206,7 @@ bool Matrix<T>::isSquare() const {
 		return false;
 }
 
-template<class T>
+template<typename T>
 bool Matrix<T>::isNull() const {
 	for (auto & r : mRawMatrix) {
 		for (auto & el : r) {
@@ -218,7 +218,7 @@ bool Matrix<T>::isNull() const {
 	return true;
 }
 
-template<class T>
+template<typename T>
 void Matrix<T>::transpose() {
 	std::size_t rows = getColumns(), columns = getRows();
 	RawMatrix<T> transposed = *allocRawMatrix(rows, columns);
@@ -234,7 +234,7 @@ void Matrix<T>::transpose() {
 	mRows = rows;
 }
 
-template<class T>
+template<typename T>
 std::vector<T>& Matrix<T>::getDiagonalElements() const {
 	if (!isSquare())
 		return *(new std::vector<T>(0));
@@ -249,7 +249,7 @@ std::vector<T>& Matrix<T>::getDiagonalElements() const {
 	return *diagonal;
 }
 
-template<class T>
+template<typename T>
 std::vector<T>& Matrix<T>::getRowElements(std::size_t row) const {
 	if (row > mRows - 1)
 		return *(new std::vector<T>());
@@ -264,7 +264,7 @@ std::vector<T>& Matrix<T>::getRowElements(std::size_t row) const {
 	return *elements;
 }
 
-template<class T>
+template<typename T>
 std::vector<T>& Matrix<T>::getColumnElements(std::size_t column) const {
 	if (column > mColumns - 1)
 		return *(new std::vector<T>());
@@ -279,7 +279,7 @@ std::vector<T>& Matrix<T>::getColumnElements(std::size_t column) const {
 	return *elements;
 }
 
-template<class T>
+template<typename T>
 Matrix<T>& Matrix<T>::Square() {
 	Matrix<T>* matrix = new Matrix<T>(*this);
 
@@ -311,17 +311,17 @@ T Matrix<T>::getDeterminant() const {
 	return determinant;
 }
 */
-template<class T>
+template<typename T>
 std::vector<T>& Matrix<T>::operator[](std::size_t row) {
 	return mRawMatrix[row];
 }
 
-template<class T>
+template<typename T>
 const std::vector<T>& Matrix<T>::operator[](std::size_t row) const {
 	return mRawMatrix[row];
 }
 
-template<class T>
+template<typename T>
 Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& rhs) {
 	std::size_t rows = mRows, columns = mColumns;
 
@@ -341,7 +341,7 @@ Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& rhs) {
 	return *this;
 }
 
-template<class T>
+template<typename T>
 Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& rhs) {
 	std::size_t rows = mRows, columns = mColumns;
 
@@ -361,7 +361,7 @@ Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& rhs) {
 	return *this;
 }
 
-template<class T>
+template<typename T>
 Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& rhs) {
 	if (mColumns != rhs.getRows())
 		return *this;
@@ -383,7 +383,7 @@ Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& rhs) {
 	return *this;
 }
 
-template<class T>
+template<typename T>
 Matrix<T>& Matrix<T>::operator*=(const T& value) {
 	std::size_t rows = mRows, columns = mColumns;
 
@@ -396,7 +396,7 @@ Matrix<T>& Matrix<T>::operator*=(const T& value) {
 	return *this;
 }
 
-template<class T>
+template<typename T>
 Matrix<T>& Matrix<T>::operator/=(const T& value) {
 	std::size_t rows = mRows, columns = mColumns;
 
@@ -409,7 +409,7 @@ Matrix<T>& Matrix<T>::operator/=(const T& value) {
 	return *this;
 }
 
-template<class T>
+template<typename T>
 Matrix<T> Matrix<T>::operator-() {
 	Matrix<T> matrix(*this);
 
@@ -422,7 +422,7 @@ Matrix<T> Matrix<T>::operator-() {
 	return matrix;
 }
 
-template<class T>
+template<typename T>
 RawMatrix<T>* Matrix<T>::allocRawMatrix(std::size_t rows, std::size_t columns, T defaultValue) const {
 	RawMatrix<T>* rawMatrix = new RawMatrix<T>(rows);
 
