@@ -21,16 +21,60 @@ using RawMatrix = std::vector<std::vector<T>>;
 template <typename T>
 class Matrix {
 public:
+	/**
+	 * @brief Construct a new Matrix object
+	 * 
+	 * @param rows Number of rows of matrix
+	 * @param columns Number of columns of matrix
+	 * @param defaultValue Default value to initialize elements of matrix
+	 */
 	Matrix(std::size_t rows = 0, std::size_t columns = 0, T defaultValue = T());
+	/**
+	 * @brief Construct a new Matrix object from RawMatrix
+	 * 
+	 * @param rawMatrix RawMatrix
+	 */
 	Matrix(const RawMatrix<T>& rawMatrix);
+
+	/**
+	 * @brief Construct a new Matrix object
+	 * 
+	 * @param rawMatrixList Initializer list
+	 */
 	Matrix(const std::initializer_list<std::initializer_list<T>>& rawMatrixList);
+
+	/**
+	 * @brief Copy constructor
+	 * 
+	 * @param matrix Matrix to copy
+	 */
 	Matrix(const Matrix<T>& matrix);
 
+	/**
+	 * @brief Destroy the Matrix object
+	 * 
+	 */
 	~Matrix();
 	
+	/**
+	 * @brief Get the RawMatrix of matrix
+	 * 
+	 * @return const RawMatrix<T>& RawMatrix of matrix
+	 */
 	const RawMatrix<T>& getRawMatrix() const;
 	
+	/**
+	 * @brief Get number of rows in matrix
+	 * 
+	 * @return std::size_t Number of rows
+	 */
 	std::size_t getRows() const;
+
+	/**
+	 * @brief Get number of columns in matrix
+	 * 
+	 * @return std::size_t Number of columns
+	 */
 	std::size_t getColumns() const;
 
 	/**
@@ -39,43 +83,142 @@ public:
 	 * @return std::vector<T>& Elements
 	 */
 	std::vector<T>& getDiagonalElements() const;
+
+	/**
+	 * @brief Get elements of specific row
+	 * 
+	 * @param row Specific row
+	 * @return std::vector<T>& All elements of row
+	 */
 	std::vector<T>& getRowElements(std::size_t row) const;
+
+	/**
+	 * @brief Get elements of specific column
+	 * 
+	 * @param column Specific column
+	 * @return std::vector<T>& All elements if column
+	 */
 	std::vector<T>& getColumnElements(std::size_t column) const;
 
+	/**
+	 * @brief Set specific element to some value
+	 * 
+	 * @param row Row of element
+	 * @param column Column of element
+	 * @param value Value
+	 */
 	void set(std::size_t row, std::size_t column, T value);
-	   T get(std::size_t row, std::size_t column) const;
+
+	/**
+	 * @brief Get specific element value
+	 * 
+	 * @param row Row of element
+	 * @param column Column of element
+	 * @return T Value of element
+	 */
+	T get(std::size_t row, std::size_t column) const;
 	
+	/**
+	 * @brief Checks: is vector the matrix or not
+	 * 
+	 * @return true if the matrix is a vector
+	 * @return false if the matrix isn't a vector
+	 */
 	bool isVector() const;
+
+	/**
+	 * @brief Checks: is square the matrix or not
+	 * 
+	 * @return true if the matrix is square
+	 * @return false if the matrix isn't square
+	 */
 	bool isSquare() const;
+
+	/**
+	 * @brief Checks: is null the matrix or not
+	 * 
+	 * @return true if the matrix is null
+	 * @return false if the matrix isn't null
+	 */
 	bool isNull() const;
 
+	/**
+	 * @brief Transposes the matrix
+	 * 
+	 */
 	void transpose();
 
 	//T getDeterminant() const;
 
+	/**
+	 * @brief Squares the matrix (matrix ^ 2)
+	 * 
+	 * @return Matrix<T>& Matrix in square
+	 */
 	Matrix<T>& Square();
 
+	/**
+	 * @brief Overloading of operator [] to access some row of matrix
+	 * 
+	 * @param row Specific row
+	 * @return std::vector<T>& All elements in this row
+	 */
 		  std::vector<T>& operator[](std::size_t row);
+
+	/**
+	 * @brief Overloading of operator [] to access some row of matrix (read only)
+	 * 
+	 * @param row Specific row
+	 * @return const std::vector<T>& All elements in this row
+	 */
 	const std::vector<T>& operator[](std::size_t row) const;
 
 	Matrix<T>& operator+=(const Matrix<T>& rhs);
 	Matrix<T>& operator-=(const Matrix<T>& rhs);
 	Matrix<T>& operator*=(const Matrix<T>& rhs);
-	Matrix<T>& operator*=(const T& value); // operand's type??
-	Matrix<T>& operator/=(const T& value); // operand's type??
+	Matrix<T>& operator*=(const T& value);
+	Matrix<T>& operator/=(const T& value);
 
+	/**
+	 * @brief Overloading for operator +
+	 * 
+	 * @param lhs Left matrix
+	 * @param rhs Right matrix
+	 * @return Matrix<T> Result
+	 */
 	friend Matrix<T> operator+(Matrix<T> lhs, const Matrix<T>& rhs) {
 		return lhs += rhs;
 	}
 
+	/**
+	 * @brief Overloading for operator -
+	 * 
+	 * @param lhs Left matrix
+	 * @param rhs Right matrix
+	 * @return Matrix<T> Result
+	 */
 	friend Matrix<T> operator-(Matrix<T> lhs, const Matrix<T>& rhs) {
 		return lhs -= rhs;
 	}
 
+	/**
+	 * @brief Overloading for operator * (multiplying matrix by matrix)
+	 * 
+	 * @param lhs Left matrix
+	 * @param rhs Right matrix
+	 * @return Matrix<T> Multiplied matrix
+	 */
 	friend Matrix<T> operator*(Matrix<T> lhs, const Matrix<T>& rhs) {
 		return lhs *= rhs;
 	}
 
+	/**
+	 * @brief Overloading for operator * (multiplying matrix by number)
+	 * 
+	 * @param lhs Matrix to multiply
+	 * @param rhs Number to multiply
+	 * @return Matrix<T> Multiplied matrix
+	 */
 	friend Matrix<T> operator*(Matrix<T> lhs, const T& rhs) {
 		return lhs *= rhs;
 	}
@@ -100,7 +243,13 @@ public:
 	 */
 	Matrix<T> operator-();
 
-
+	/**
+	 * @brief Static method for easy allocating RawMatrix (used just by some algorithms)
+	 * 
+	 * @param rows Number of rows od matrix
+	 * @param columns Number of columns of matrix
+	 * @return RawMatrix<T>& new RawMatrix
+	 */
 	static RawMatrix<T>& allocateRawMatrix(std::size_t rows, std::size_t columns);
 
 private:
