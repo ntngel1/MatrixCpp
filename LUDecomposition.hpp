@@ -34,6 +34,12 @@ public:
 	LUDecomposition(const Matrix<T>& matrix);
 
     /**
+     * @brief Destroy the LUDecomposition object
+     * 
+     */
+    ~LUDecomposition();
+
+    /**
      * @brief Decomposes given matrix
      * 
      * @param Matrix to get decomposition
@@ -106,6 +112,11 @@ LUDecomposition<T>::LUDecomposition() {
 template<class T>
 LUDecomposition<T>::LUDecomposition(const Matrix<T>& matrix) {
     decompose(matrix);
+}
+
+template<class T>
+LUDecomposition<T>::~LUDecomposition() {
+
 }
 
 template<class T>
