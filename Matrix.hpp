@@ -36,11 +36,11 @@ public:
 	/**
 	 * @brief Get the Diagonal Elements of Matrix
 	 * 
-	 * @return std::vector<T>* Elements
+	 * @return std::vector<T>& Elements
 	 */
-	std::vector<T>* getDiagonalElements() const;
-	std::vector<T>* getRowElements(std::size_t row) const;
-	std::vector<T>* getColumnElements(std::size_t column) const;
+	std::vector<T>& getDiagonalElements() const;
+	std::vector<T>& getRowElements(std::size_t row) const;
+	std::vector<T>& getColumnElements(std::size_t column) const;
 
 	void set(std::size_t row, std::size_t column, T value);
 	   T get(std::size_t row, std::size_t column) const;
@@ -235,9 +235,9 @@ void Matrix<T>::transpose() {
 }
 
 template<class T>
-std::vector<T>* Matrix<T>::getDiagonalElements() const {
+std::vector<T>& Matrix<T>::getDiagonalElements() const {
 	if (!isSquare())
-		return new std::vector<T>(0);
+		return *(new std::vector<T>(0));
 	
 	std::size_t elements = getRows();
 	std::vector<T>* diagonal = new std::vector<T>();
@@ -246,13 +246,13 @@ std::vector<T>* Matrix<T>::getDiagonalElements() const {
 	for (std::size_t i = 0; i < elements; ++i)
 		diagonal->push_back(mRawMatrix[i][i]);
 
-	return diagonal;
+	return *diagonal;
 }
 
 template<class T>
-std::vector<T>* Matrix<T>::getRowElements(std::size_t row) const {
+std::vector<T>& Matrix<T>::getRowElements(std::size_t row) const {
 	if (row > mRows - 1)
-		return new std::vector<T>(0);
+		return *(new std::vector<T>());
 
 	std::vector<T>* elements = new std::vector<T>();
 	elements->reserve(mColumns);
@@ -261,13 +261,13 @@ std::vector<T>* Matrix<T>::getRowElements(std::size_t row) const {
 		elements->push_back(mRawMatrix[row][column]);
 	}
 
-	return elements;
+	return *elements;
 }
 
 template<class T>
-std::vector<T>* Matrix<T>::getColumnElements(std::size_t column) const {
+std::vector<T>& Matrix<T>::getColumnElements(std::size_t column) const {
 	if (column > mColumns - 1)
-		return new std::vector<T>();
+		return *(new std::vector<T>());
 
 	std::vector<T>* elements = new std::vector<T>();
 	elements->reserve(mRows);
@@ -276,7 +276,7 @@ std::vector<T>* Matrix<T>::getColumnElements(std::size_t column) const {
 		elements->push_back(mRawMatrix[row][column]);
 	}
 
-	return elements;
+	return *elements;
 }
 
 template<class T>
