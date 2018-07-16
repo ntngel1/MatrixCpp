@@ -1,3 +1,11 @@
+/**
+ * @brief Determinant header
+ * 
+ * @file Determinant.hpp
+ * @author Kirill Shepelev
+ * @date 2018-07-16
+ */
+
 #pragma once
 
 #include "Matrix.hpp"
@@ -10,18 +18,60 @@ namespace MatrixCpp {
 template<typename T>
 class Determinant {
 public:
+    /**
+     * @brief Construct a new empty Determinant object
+     * 
+     */
     Determinant();
+
+    /**
+     * @brief Construct a new Determinant object with computing a determinant of given matrix
+     * 
+     * @param matrix Matrix
+     */
     Determinant(const Matrix<T>& matrix);
 
+    /**
+     * @brief Destroy the Determinant object
+     * 
+     */
     ~Determinant();
 
+    /**
+     * @brief Compute determinant for given matrix
+     * 
+     * @param matrix Matrix
+     * @return true if determinant was successfully computed
+     * @return false if determinant wasn't computed
+     */
     bool computeDeterminant(const Matrix<T>& matrix);
 
+    /**
+     * @brief Checks: is determinant for matrix was computed
+     * 
+     * @return true if determinant wasn't computed
+     * @return false if determinant was computed
+     */
     bool isEmpty();
+
+    /**
+     * @brief Get the determinant
+     * 
+     * @return T determinant
+     */
     T getDeterminant();
 
 private:
+    /**
+     * @brief Empty flag
+     * 
+     */
     bool empty;
+
+    /**
+     * @brief Determinant
+     * 
+     */
     T determinant;
 };
 
