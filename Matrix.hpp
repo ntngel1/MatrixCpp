@@ -586,7 +586,7 @@ RawMatrix<T>* Matrix<T>::allocRawMatrix(std::size_t rows, std::size_t columns, T
 	return rawMatrix;
 }
 
-template<class T>
+template<typename T>
 bool operator==(Matrix<T> const& lhs, Matrix<T> const& rhs) {
 	if (!(lhs.getRows() == rhs.getRows() && lhs.getColumns() == rhs.getColumns()))
 		return false;
