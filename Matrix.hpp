@@ -12,6 +12,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <tuple>
 
 namespace MatrixCpp {
 
@@ -163,7 +164,7 @@ public:
 	 * @param row Specific row
 	 * @return std::vector<T>& All elements in this row
 	 */
-		  std::vector<T>& operator[](std::size_t row);
+	std::vector<T>& operator[](std::size_t row);
 
 	/**
 	 * @brief Overloading of operator [] to access some row of matrix (read only)
@@ -583,6 +584,23 @@ RawMatrix<T>* Matrix<T>::allocRawMatrix(std::size_t rows, std::size_t columns, T
 	}
 
 	return rawMatrix;
+}
+
+template<class T>
+bool operator==(Matrix<T> const& lhs, Matrix<T> const& rhs) {
+	if (!(lhs.getRows() == rhs.getRows() && lhs.getColumns() == rhs.getColumns()))
+		return false;
+
+	std::size_t rows = lhs.getRows(), columns = lhs.getColumns();
+
+	for (std::size_t row = 0; row < rows; ++row) {
+		for (std::size_t column = 0; column < columns; ++column) {
+			if (lhs.get(row, column) != rhs.get(row, column))
+				return false;
+		}
+	}
+
+	return true;
 }
 
 }
